@@ -1,0 +1,33 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+}
+
+header {
+    margin-bottom: 20px;
+}
+
+nav {
+    margin-bottom: 15px;
+}
+
+a,
+button {
+    margin-right: 10px;
+}
+
+.card {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-top: 10px;
+}
+
+.escuro {
+    background: #222;
+    color: white;
+}
+
+.escuro .card {
+    border-color: white;
+}

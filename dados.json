@@ -1,0 +1,19 @@
+{
+  "cursos": [
+    {
+      "nome": "ADS",
+      "modalidade": "Tecnólogo"
+    },
+    {
+      "nome": "Informática",
+      "modalidade": "Técnico"
+    }
+  ],
+
+  "noticias": [
+    {
+      "titulo": "Semana Acadêmica",
+      "resumo": "Palestras e minicursos."
+    }
+  ]
+}
