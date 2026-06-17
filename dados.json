@@ -1,19 +1,16 @@
 {
-  "cursos": [
-    {
-      "nome": "ADS",
-      "modalidade": "Tecnólogo"
-    },
-    {
-      "nome": "Informática",
-      "modalidade": "Técnico"
-    }
-  ],
-
-  "noticias": [
-    {
-      "titulo": "Semana Acadêmica",
-      "resumo": "Palestras e minicursos."
-    }
-  ]
+    "noticias":[
+        {
+            "titulo":"JavaScript",
+            "texto":"JavaScript permite criar SPAs."
+        },
+        {
+            "titulo":"DOM",
+            "texto":"DOM permite alterar elementos HTML."
+        },
+        {
+            "titulo":"History API",
+            "texto":"Permite navegar sem recarregar."
+        }
+    ]
 }

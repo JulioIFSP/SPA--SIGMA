@@ -1,33 +1,49 @@
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 20px;
+body{
+    font-family: Arial, Helvetica, sans-serif;
+    margin:0;
+    background:#f4f4f4;
 }
 
-header {
-    margin-bottom: 20px;
+header{
+    background:#222;
+    color:white;
+    padding:20px;
 }
 
-nav {
-    margin-bottom: 15px;
+nav{
+    margin-bottom:15px;
 }
 
-a,
-button {
-    margin-right: 10px;
+nav a{
+    color:white;
+    text-decoration:none;
+    margin-right:10px;
+    padding:8px;
+    background:#444;
+    border-radius:5px;
 }
 
-.card {
-    border: 1px solid #ccc;
-    padding: 10px;
-    margin-top: 10px;
+nav a:hover{
+    background:#666;
 }
 
-.escuro {
-    background: #222;
-    color: white;
+#app{
+    padding:20px;
 }
 
-.escuro .card {
-    border-color: white;
+.card{
+    background:white;
+    margin:10px 0;
+    padding:15px;
+    border-radius:10px;
+}
+
+button{
+    padding:10px;
+    margin:5px;
+    cursor:pointer;
+}
+
+.oculto{
+    display:none;
 }

@@ -1,285 +1,293 @@
-/******************************************************************
+const app = document.getElementById("app")
+//procura o id app no html e da esse valor para constante app*/
+//Sem essa linha, o JavaScript não sabe qual elemento do HTML ele deve alterar.*/
 
- * SELECIONA A DIV PRINCIPAL DA PÁGINA
- 
- * O QUE FAZ:
- Permite acessar o APP do HTML
- 
- * POR QUE:
- Precisamos de um local para mostrar o conteúdo da SPA.
- 
- * COMO:
- document.querySelector("#app") seleciona a div com id "app".
- 
- ******************************************************************/
-const app = document.querySelector("#app");
+/* ====================
+   ESTADO DA APLICAÇÃO - Memória viva da aplicação. Valores mudam conforme o usuário interage.
+==================== */
 
 
-/******************************************************************
- *
- * ESTADO DA APLICAÇÃO
- *
- * O QUE FAZ:
-Cria um objeto chamado estado para armazenar informações da SPA, 
-com objetivo de manter dados que podem mudar durante a navegação, como a página atual e o número de acessos.
-Define um objeto com propriedades pagina e acessos.
 
- ******************************************************************/
-const estado = {
-
-    // Página atual
-    pagina: "home",
-
-    // Quantidade de acessos
-    acessos: 0
-
-};
-
-
-/******************************************************************
- *
- * CARREGA DADOS DO JSON
- *
- * O QUE FAZ:
-Essa função busca o arquivo dados.json e guarda o resultado da requisição na constante resposta. 
-Depois ela pega o JSON que veio nessa resposta, converte para um objeto JavaScript e guarda o resultado na constante dados. 
-Por fim, retorna dados para quem chamou a função.
-******************************************************************/
-
-
-async function carregarDados() {
-
-    const resposta = await fetch("dados.json");
-    // Crie uma constante chamada resposta, busque o arquivo dados.json, 
-    // espere ele chegar e guarde o resultado da requisição dentro de resposta.
-
-    const dados = await resposta.json();
-    // Crie uma constante chamada dados, converta a resposta para um objeto JavaScript,
-    // espere a conversão terminar e guarde o resultado dentro de dados.
-
-    return dados;
+let estado = {
+    paginaAtual: "home",
+    acessos: 0,
+    tema: "claro",
+    noticias: []
 }
 
 
-/******************************************************************
- *
- * CRIA UM CARD HTML
- *
- * O QUE FAZ:
- Cria um modelo de card usando template string, 
- onde o título e o texto são preenchidos por outras partes do código.
- Evita repetição de código e facilita a criação de novos cards.
+/* ====================
+   PÁGINAS - Guarda o HTML das paginas
+==================== */
 
- ******************************************************************/
-function criarCard(titulo, texto) {
+const paginas = {
 
-    return `
+    home: `
+        <h2>Home</h2>
+        <p>Bem-vindo à SPA.</p>
+
+        <button id="btnAcessos">
+            Mostrar acessos
+        </button>
+
+        <div id="resultado"></div>
+    `,
+
+    sobre: `
+        <h2>Sobre</h2>
+        <p>Projeto para estudar SPA.</p>
+    `,
+
+    contato: `
+        <h2>Contato</h2>
+        <p>Email: aluno@ifsp.edu.br</p>
+    `,
+
+    estado: `
+        <h2>Estado da Aplicação</h2>
+
+        <p>Página Atual:
+            ${estado.paginaAtual}
+        </p>
+
+        <p>Acessos:
+            ${estado.acessos}
+        </p>
+
+        <button id="trocarTema">
+            Alternar Tema
+        </button>
+    `   
+}
+
+/* ====================
+   RENDERIZAÇÃO
+==================== */
+
+function render(rota){
+
+    estado.paginaAtual = rota //atualiza o estado para a pagina clicada
+    estado.acessos++ // +1 acesso
+
+    if(rota === "noticias"){
+    renderNoticias()  // chama a função específica de notícias
+    return            // para aqui, não continua
+    }
+
+    app.innerHTML =
+        paginas[rota] //rota tem um valor de acordo com oq o usuario clicou 
+        || //PLANO B - se a rota não existir mostra a mensagem erro
+        "<h2>Página não encontrada</h2>"
+
+    configurarEventos()
+}
+
+/* ====================
+   EVENTOS DOM
+==================== */
+
+function configurarEventos(){
+
+    let btn = document.getElementById("btnAcessos")
+
+    if(btn){ //verifica se o botao existe na tela
+
+        btn.onclick = () => { //se btn exister, quando for clicado procura o html resultado
+                              //e da o valor acessos: quantidade pra ele
+
+            document
+                .getElementById("resultado")
+                .innerHTML =
+                `Acessos: ${estado.acessos}`
+        }
+    }
+
+    let tema = document.getElementById("trocarTema")
+// Busca trocarTema no HTML e guarda em tema.
+// Se existir, quando clicado alterna o fundo e a cor do texto entre claro e escuro.
+    if(tema){
+
+        tema.onclick = () => {
+
+            if(document.body.style.background == "black"){
+
+                document.body.style.background = "#f4f4f4"
+                document.body.style.color = "black"
+
+            }else{
+
+                document.body.style.background = "black"
+                document.body.style.color = "white"
+
+            }
+        }
+    }
+}
+
+/* ====================
+   NOTÍCIAS JSON
+==================== */
+
+async function carregarNoticias(){ //Cria uma função assíncrona pode pausar e esperar sem travar o resto da página.
+
+    const resposta =
+        await fetch("dados.json")
+//Busca o arquivo dados.json e pausa até receber a resposta. Guarda o resultado em resposta.
+    const dados =
+        await resposta.json()
+//converte a resposta pra json e da esse valor para a const dados
+   
+    estado.noticias =
+        dados.noticias
+//pega o array (lista) noticias e atualiza o estado.noticias que estava vazio
+}
+
+function renderNoticias(){
+
+    let html =
+        "<h2>Notícias</h2>" //Cria a variável html com o título da página.
+
+        //adiciona + html sem apagar oq ja tinha ESTRUTRA DA PAGINA
+    html += ` 
+        <button id="mostrar"> 
+            Mostrar/Ocultar
+        </button>
+
+        <div id="lista">
+    `
+
+  estado.noticias.forEach(noticia => { 
+//percorre cada noticia do array estado.noticias
+// noticia => atribui esse html para cada noticia percorrida
+
+    html += `
         <div class="card">
-            <h2>${titulo}</h2>
-            <p>${texto}</p>
+            <h3>${noticia.titulo}</h3>
+            <p>${noticia.texto}</p>
+            <button class="remover">Remover</button>
         </div>
-    `;
+    `
+})
 
-}
+html += "</div>"
 
+app.innerHTML = html //atualiza o html
 
-/******************************************************************
- 
- * MOSTRA A TELA DE CURSOS
- Cria a função renderCursos, que recebe os dados do JSON como parâmetro
- Dentro da função, o conteúdo da div app é atualizado para mostar o novo HTML de Cursos, incluindo o número de acessos.
-
- * O QUE FAZ:
-
- ******************************************************************/
-function renderCursos(dados) {
-
-    app.innerHTML = `
-        <h1>Cursos</h1>
-
-        <p>
-            Acessos: ${estado.acessos}
-        </p>
-    `;
-
-    dados.cursos.forEach(curso => {
-
-        app.innerHTML += criarCard(
-            curso.nome,
-            curso.modalidade
-        );
-
-    });
-
-}
-// é criada a função renderNoticias, que recebe os dados já convertidos em JavaScript do dados.json
-// ela altera o HTML atual da div "app", substituindo tudo por uma nova tela
-// essa nova tela contém o título e o contador de acessos
-// depois, o forEach percorre a lista de notícias (ou cursos, dependendo da função)
-// o forEach NÃO atribui valores em dados, ele apenas percorre a lista
-// para cada item, ele usa a função criarCard
-// que monta um HTML base (card) usando nome e modalidade (ou título e resumo)
-// esse HTML é adicionado na tela com innerHTML +=
+    document
+        .querySelectorAll(".remover") 
+        //Busca todos os botões com a classe remover na tela que foram gerado pelas noticias.
     
-/******************************************************************
- *
- * MOSTRA A TELA DE NOTÍCIAS
- *
- * O QUE FAZ:
- * Exibe notícias vindas do JSON.
- *
- * POR QUE:
- * Demonstrar outra rota.
- *
- * COMO:
- * Percorrendo o array noticias.
- *
- ******************************************************************/
-function renderNoticias(dados) {
+        .forEach(botao => {
+//Para cada botão encontrado, adiciona um evento de clique que remove o card pai quando clicado.
+// apaga a div do card toda da qual o button faz parte
+            botao.onclick = () => {
 
-    app.innerHTML = `
-        <h1>Notícias</h1>
+                botao
+                    .parentElement
+                    .remove()
+            }
+        })
 
-        <p>
-            Acessos: ${estado.acessos}
-        </p>
-    `;
-
-    dados.noticias.forEach(noticia => {
-
-        app.innerHTML += criarCard(
-            noticia.titulo,
-            noticia.resumo
-        );
-
-    });
-
+    document
+        .getElementById("mostrar")
+        .onclick = () => {
+//procura o mostrar que foi gerado junto com a pagina noticia e da um valor no clique dele
+            document
+                .getElementById("lista")
+                .classList //O .classList acessa as classes CSS desse elemento 
+                           // para adicionar ou remover o oculto.
+                .toggle("oculto")
+        }
 }
 
+/* ====================
+   HASH ROUTING
+==================== */
 
-/******************************************************************
- *
- * RENDERIZA A TELA
- *
- * O QUE FAZ:
- * Decide qual conteúdo mostrar.
- *
- * POR QUE:
- * Centralizar a navegação da SPA.
- *
- * COMO:
- * Verificando a página atual.
- *
- ******************************************************************/
-async function renderizar(pagina) {
-
-    const dados = await carregarDados();
-
-    // Atualiza estado
-    estado.pagina = pagina;
-
-    // Incrementa contador
-    estado.acessos++;
-
-    if (pagina === "cursos") {
-
-        renderCursos(dados);
-
-    }
-
-    if (pagina === "noticias") {
-
-        renderNoticias(dados);
-
-    }
-
-}
-
-
-/******************************************************************
- *
- * HASH ROUTING
- *
- * O QUE FAZ:
- * Detecta mudança após o # da URL.
- *
- * POR QUE:
- * Permitir navegação sem recarregar a página.
- *
- * COMO:
- * Usando o evento hashchange.
- *
- ******************************************************************/
-window.addEventListener("hashchange", () => {
+function rotaHash(){
 
     const rota =
-        location.hash.replace("#", "");
+        location.hash //pega oq vem depois do # na URL do site
+        .replace("#","") //remove o # deixando só o nome
+        || "home" //Se nao tiver # volta pra pagina padrao
 
-    renderizar(rota);
-
-});
-
-
-/******************************************************************
- *
- * HISTORY API
- *
- * O QUE FAZ:
- * Altera URL sem recarregar.
- *
- * POR QUE:
- * Criar URLs mais bonitas.
- *
- * COMO:
- * Usando pushState().
- *
- ******************************************************************/
-function navegarNoticias() {
-
-    history.pushState(
-        {},
-        "",
-        "/noticias"
-    );
-
-    renderizar("noticias");
-
+    render(rota) //chama função render que atualiza o html de acordo com a pagina clicada.
 }
 
+window.addEventListener( //no objeto window (navegador) adiciona um evento escutador
+    "hashchange", //o evento dispara quando o URL mudar
+    rotaHash //Quando os requisitos desse evento forem cumpridos o rotaHash acontece
+)
 
-/******************************************************************
- *
- * POPSTATE
- *
- * O QUE FAZ:
- * Detecta voltar e avançar do navegador.
- *
- * POR QUE:
- * Manter a SPA sincronizada.
- *
- * COMO:
- * Escutando o evento popstate.
- *
- ******************************************************************/
-window.addEventListener("popstate", () => {
+/* ====================
+   HISTORY API
+==================== */
 
-    renderizar("noticias");
+function navegar(url){
 
-});
+    history.pushState( //muda a URL do navegador sem recarregar a página
+        {},
+        "",
+        url
+    )
 
+    const rota =
+        url.replace("/","") //remove a / da url deixando só o nome da rota
 
-/******************************************************************
- *
- * INICIALIZA A SPA
- *
- * O QUE FAZ:
- * Mostra a primeira tela.
- *
- * POR QUE:
- * A aplicação precisa iniciar em algum lugar.
- *
- * COMO:
- * Chamando renderizar.
- *
- ******************************************************************/
-renderizar("cursos");
+    render(rota) //chama o render com a rota limpa para atualizar a tela
+}
+
+document.addEventListener( //escuta todos os cliques da página
+    "click",
+    e => {
+
+        if(
+            e.target.matches("[data-link]") //verifica se o elemento clicado tem o atributo data-link
+        ){
+
+            e.preventDefault() //impede o comportamento padrão do link (recarregar a página)
+
+            navegar(
+                e.target.getAttribute("href") //pega o href do link clicado e passa para navegar()
+            )
+        }
+    }
+)
+
+window.addEventListener(
+    "popstate", //dispara quando o usuário clica em voltar/avançar no navegador
+    () => {
+
+        const rota =
+            location.pathname //pega o caminho atual da URL
+            .replace("/","") //remove a / deixando só o nome da rota
+            || "home" //se não tiver rota, usa home como padrão
+
+        render(rota) //atualiza a tela com a rota encontrada
+    }
+)
+
+/* ====================
+   INICIALIZAÇÃO
+==================== */
+
+async function iniciar(){ //função assíncrona que inicia a aplicação
+
+    await carregarNoticias() //espera carregar as notícias antes de continuar
+
+    if(location.hash){ //se a URL tiver # usa o hash routing
+
+        rotaHash()
+
+    }else{ //se não, usa a URL normal
+
+        const rota =
+            location.pathname
+            .replace("/","") //remove a / deixando só o nome da rota
+            || "home" //se não tiver rota, usa home como padrão
+
+        render(rota) //atualiza a tela com a rota encontrada
+    }
+}
+    
+iniciar() //chama a função para iniciar a aplicação
